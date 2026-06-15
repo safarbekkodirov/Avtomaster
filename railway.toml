@@ -1,0 +1,10 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "docker/php/Dockerfile"
+dockerfileTarget = "prod"
+
+[deploy]
+startCommand = "/usr/bin/supervisord -c /etc/supervisord.conf"
+healthcheckPath = "/api/v1/health"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
