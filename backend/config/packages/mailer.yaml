@@ -1,0 +1,6 @@
+# config/packages/mailer.yaml
+framework:
+    mailer:
+        dsn: '%env(MAILER_DSN)%'
+        # MAILER_DSN=smtp://user:pass@smtp.example.com:587
+        # MAILER_DSN=smtp://localhost:1025  # dev mailpit

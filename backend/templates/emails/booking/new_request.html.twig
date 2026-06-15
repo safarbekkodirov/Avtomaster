@@ -1,0 +1,35 @@
+{% extends 'emails/layout.html.twig' %}
+
+{% block title %}Новая заявка — Avtomaster{% endblock %}
+
+{% block content %}
+    <h2 style="margin-top:0;">Новая заявка на запись</h2>
+    <p>Клиент <strong>{{ booking.client.firstName|default('') }} {{ booking.client.lastName|default('') }}</strong> хочет записаться к вам.</p>
+
+    <div class="info-box">
+        <div class="info-row">
+            <span class="label">Услуга</span>
+            <span class="value">{{ booking.service.name|default('') }}</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Дата и время</span>
+            <span class="value">{{ booking.slot.date }}, {{ booking.slot.startTime }} — {{ booking.slot.endTime }}</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Стоимость</span>
+            <span class="value">{{ booking.total }} ₽</span>
+        </div>
+        {% if booking.notes %}
+            <div class="info-row">
+                <span class="label">Примечание</span>
+                <span class="value">{{ booking.notes }}</span>
+            </div>
+        {% endif %}
+    </div>
+
+    <p style="text-align:center;">
+        <a href="{{ frontend_url }}/master/dashboard/bookings/{{ booking.id }}" class="btn">Подтвердить или отклонить</a>
+    </p>
+
+    <p style="font-size:13px;color:#666;">Заявка будет автоматически отменена через 24 часа, если не будет подтверждена.</p>
+{% endblock %}

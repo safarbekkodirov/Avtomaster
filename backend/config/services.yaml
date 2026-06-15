@@ -1,0 +1,52 @@
+# config/services.yaml
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Controller\:
+        resource: ../src/Controller/
+        tags: ['controller.service_arguments']
+
+    App\Domain\:
+        resource: ../src/Domain/
+
+    App\Infrastructure\:
+        resource: ../src/Infrastructure/
+
+    App\EventListener\:
+        resource: ../src/EventListener/
+
+    App\Security\:
+        resource: ../src/Security/
+
+    App\Twig\:
+        resource: ../src/Twig/
+
+    App\DataFixtures\:
+        resource: ../src/DataFixtures/
+
+    App\Domain\Payment\Gateway\StripeGateway:
+        arguments:
+            $webhookSecret: '%env(STRIPE_WEBHOOK_SECRET)%'
+
+    Stripe\StripeClient:
+        arguments:
+            - '%env(STRIPE_SECRET_KEY)%'
+
+    App\Domain\Payment\Service\PaymentService:
+        arguments:
+            $successUrl: '%env(FRONTEND_URL)%/booking/success'
+            $cancelUrl:  '%env(FRONTEND_URL)%/booking/cancel'
+
+    App\Twig\AppExtension:
+        arguments:
+            $frontendUrl: '%env(FRONTEND_URL)%'
+
+    App\Infrastructure\Notification\MessageHandler\SendNotificationHandler:
+        arguments:
+            $senderEmail: '%env(MAILER_SENDER_EMAIL)%'
+            $senderName: '%env(MAILER_SENDER_NAME)%'
+
+    App\Domain\Payment\Gateway\PaymentGatewayInterface:
+        alias: App\Domain\Payment\Gateway\MockPaymentGateway

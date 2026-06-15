@@ -1,0 +1,29 @@
+{% extends 'emails/layout.html.twig' %}
+
+{% block title %}Обслуживание завершено — Avtomaster{% endblock %}
+
+{% block content %}
+    <h2 style="margin-top:0; color:#17a2b8;">Обслуживание завершено</h2>
+    <p>Мастер <strong>{{ booking.master.firstName|default('') }} {{ booking.master.lastName|default('') }}</strong> завершил обслуживание.</p>
+
+    <div class="info-box">
+        <div class="info-row">
+            <span class="label">Услуга</span>
+            <span class="value">{{ booking.service.name|default('') }}</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Дата</span>
+            <span class="value">{{ booking.slot.date }}</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Стоимость</span>
+            <span class="value">{{ booking.total }} ₽</span>
+        </div>
+    </div>
+
+    <p>Пожалуйста, оставьте отзыв о качестве обслуживания.</p>
+
+    <p style="text-align:center;">
+        <a href="{{ frontend_url }}/booking/{{ booking.id }}/review" class="btn">Оставить отзыв</a>
+    </p>
+{% endblock %}

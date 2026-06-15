@@ -1,0 +1,29 @@
+{% extends 'emails/layout.html.twig' %}
+
+{% block title %}Запись отменена — Avtomaster{% endblock %}
+
+{% block content %}
+    <h2 style="margin-top:0; color:#dc3545;">Запись отменена</h2>
+    <p>К сожалению, ваша запись была отменена.</p>
+
+    <div class="info-box">
+        <div class="info-row">
+            <span class="label">Мастер</span>
+            <span class="value">{{ booking.master.firstName|default('') }} {{ booking.master.lastName|default('') }}</span>
+        </div>
+        <div class="info-row">
+            <span class="label">Дата</span>
+            <span class="value">{{ booking.slot.date }}</span>
+        </div>
+        {% if booking.cancelledReason %}
+            <div class="info-row">
+                <span class="label">Причина</span>
+                <span class="value">{{ booking.cancelledReason }}</span>
+            </div>
+        {% endif %}
+    </div>
+
+    <p style="text-align:center;">
+        <a href="{{ frontend_url }}/search" class="btn">Найти другого мастера</a>
+    </p>
+{% endblock %}
