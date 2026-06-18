@@ -284,4 +284,10 @@ class Booking implements
     {
         return $this->master?->getLastName() ?? '';
     }
+
+    #[Groups(['booking:read', 'booking:list'])]
+    public function getMasterId(): ?int
+    {
+        return $this->master?->getId();
+    }
 }

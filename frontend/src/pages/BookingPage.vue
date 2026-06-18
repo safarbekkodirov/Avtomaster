@@ -51,6 +51,7 @@ function onReviewSubmitted(): void {
     </div>
 
     <template v-else>
+      <RouterLink to="/dashboard" class="booking-page__back">← Вернуться в кабинет</RouterLink>
       <div class="booking-card">
         <div class="booking-card__header">
           <h1>Запись #{{ store.current.id }}</h1>
@@ -65,7 +66,9 @@ function onReviewSubmitted(): void {
         <div class="booking-card__details">
           <div class="booking-card__row">
             <span class="booking-card__label">Мастер</span>
-            <span class="booking-card__value">{{ store.current.masterFirstName }} {{ store.current.masterLastName }}</span>
+            <RouterLink :to="{ name: 'master-profile', params: { id: store.current.masterId } }" class="booking-card__value booking-card__link">
+              {{ store.current.masterFirstName }} {{ store.current.masterLastName }}
+            </RouterLink>
           </div>
           <div class="booking-card__row">
             <span class="booking-card__label">Услуга</span>
@@ -73,7 +76,7 @@ function onReviewSubmitted(): void {
           </div>
           <div class="booking-card__row">
             <span class="booking-card__label">Дата</span>
-            <span class="booking-card__value">{{ store.current.slotDate }}</span>
+            <span class="booking-card__value">{{ new Date(store.current.slotDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) }}</span>
           </div>
           <div class="booking-card__row">
             <span class="booking-card__label">Время</span>
@@ -130,6 +133,12 @@ function onReviewSubmitted(): void {
 <style scoped>
 .booking-page { max-width: 700px; margin: 0 auto; padding: 2rem 1rem; }
 
+.booking-page__back {
+  display: inline-block; margin-bottom: 1rem;
+  color: #1a1a2e; text-decoration: none; font-size: 0.9rem;
+}
+.booking-page__back:hover { color: #e63946; }
+
 .booking-page__loading,
 .booking-page__error { text-align: center; padding: 4rem 1rem; color: #666; }
 .booking-page__error a { color: #e63946; }
@@ -151,6 +160,8 @@ function onReviewSubmitted(): void {
 .booking-card__label { color: #666; font-size: 0.9rem; }
 .booking-card__value { font-weight: 600; text-align: right; }
 .booking-card__price { color: #e63946; font-size: 1.1rem; }
+.booking-card__link { color: #1a1a2e; text-decoration: underline; }
+.booking-card__link:hover { color: #e63946; }
 .booking-card__cancel-reason { color: #dc3545; font-weight: 400; }
 
 .booking-card__actions {

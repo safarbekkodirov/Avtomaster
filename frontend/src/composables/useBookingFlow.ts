@@ -1,22 +1,18 @@
-// src/composables/useBookingFlow.ts
-// Оркестрирует: выбор слота → создание бронирования → редирект на оплату
-
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBookingStore } from '@/stores/booking.store'
-import type { TimeSlot } from '@/types/master.types'
 
 export function useBookingFlow(masterId: number) {
     const router       = useRouter()
     const bookingStore = useBookingStore()
 
-    const selectedSlot    = ref<(TimeSlot & { date: string }) | null>(null)
+    const selectedSlot    = ref<{ date: string; startTime: string; endTime: string } | null>(null)
     const selectedService = ref<number | null>(null)
     const notes           = ref('')
     const submitting      = ref(false)
     const error           = ref<string | null>(null)
 
-    function selectSlot(slot: TimeSlot & { date: string }): void {
+    function selectSlot(slot: { date: string; startTime: string; endTime: string }): void {
         selectedSlot.value = slot
     }
 
@@ -36,13 +32,14 @@ export function useBookingFlow(masterId: number) {
         try {
             const booking = await bookingStore.create({
                 masterId,
-                slotId:    selectedSlot.value.id,
                 serviceId: selectedService.value,
-                notes:     notes.value || undefined,
+                slotDate: selectedSlot.value.date,
+                slotStartTime: selectedSlot.value.startTime,
+                slotEndTime: selectedSlot.value.endTime,
+                notes: notes.value || undefined,
             })
 
-            // Редирект на оплату (Payment модуль)
-            await router.push({ name: 'payment', params: { bookingId: booking.id } })
+            await router.push({ name: 'booking', params: { id: booking.id } })
         } catch (e) {
             error.value = e instanceof Error ? e.message : 'Ошибка при создании записи'
         } finally {

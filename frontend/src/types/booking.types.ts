@@ -11,6 +11,7 @@ export interface Booking {
   total:           string
   serviceName:     string
   serviceDuration: number
+  masterId:        number
   masterFirstName: string
   masterLastName:  string
   slotDate:        string
@@ -22,10 +23,12 @@ export interface Booking {
 }
 
 export interface CreateBookingPayload {
-  masterId:  number
-  slotId:    number
-  serviceId: number
-  notes?:    string
+  masterId:      number
+  serviceId:     number
+  slotDate:      string
+  slotStartTime: string
+  slotEndTime:   string
+  notes?:        string
 }
 
 export interface CancelBookingPayload {
