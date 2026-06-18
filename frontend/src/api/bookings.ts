@@ -1,5 +1,3 @@
-// src/api/bookings.ts
-
 import client from './client'
 import type {
   Booking,
@@ -8,6 +6,8 @@ import type {
   CreateBookingPayload,
 } from '@/types/booking.types'
 import type { PaginatedResponse } from '@/types/common.types'
+
+const PATCH_HEADERS = { 'Content-Type': 'application/merge-patch+json' }
 
 export const bookingsApi = {
   create(payload: CreateBookingPayload): Promise<{ data: Booking }> {
@@ -23,14 +23,14 @@ export const bookingsApi = {
   },
 
   confirm(id: number): Promise<{ data: Booking }> {
-    return client.patch<{ data: Booking }>(`/api/v1/bookings/${id}/confirm`).then(r => r.data)
+    return client.patch<{ data: Booking }>(`/api/v1/bookings/${id}/confirm`, {}, { headers: PATCH_HEADERS }).then(r => r.data)
   },
 
   complete(id: number): Promise<{ data: Booking }> {
-    return client.patch<{ data: Booking }>(`/api/v1/bookings/${id}/complete`).then(r => r.data)
+    return client.patch<{ data: Booking }>(`/api/v1/bookings/${id}/complete`, {}, { headers: PATCH_HEADERS }).then(r => r.data)
   },
 
   cancel(id: number, payload?: CancelBookingPayload): Promise<{ data: Booking }> {
-    return client.patch<{ data: Booking }>(`/api/v1/bookings/${id}/cancel`, payload).then(r => r.data)
+    return client.patch<{ data: Booking }>(`/api/v1/bookings/${id}/cancel`, payload ?? {}, { headers: PATCH_HEADERS }).then(r => r.data)
   },
 }

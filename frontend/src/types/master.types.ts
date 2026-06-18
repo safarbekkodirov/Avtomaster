@@ -3,21 +3,22 @@ export interface MasterService {
   name:            string
   price:           number
   durationMinutes: number
-  categoryName:    string
+  categoryName:    string | null
 }
 
 export interface Master {
   id:           number
   firstName:    string
   lastName:     string
-  avatar:       string | null
+  phone:        string | null
   bio:          string | null
   regionName:   string
   address:      string | null
+  lat:          number | null
+  lng:          number | null
   rating:       number
   reviewsCount: number
   isVerified:   boolean
-  distanceKm:   number | null
   services:     MasterService[]
 }
 
@@ -27,11 +28,10 @@ export interface MasterSearchResult {
 }
 
 export interface MasterSearchParams {
-  regionSlug?:  string
+  regionName?: string
   lat?:         number
   lng?:         number
   radiusKm?:    number
-  categoryId?:  number
   minRating?:   number
   maxPrice?:    number
   sortBy?:      'rating' | 'distance' | 'price'
@@ -39,10 +39,26 @@ export interface MasterSearchParams {
   perPage?:     number
 }
 
-export interface TimeSlot {
-  id:        number
-  startTime: string
-  endTime:   string
+export interface CreateMasterPayload {
+  firstName:  string
+  lastName:   string
+  phone?:     string
+  bio?:       string
+  regionName: string
+  address?:   string
+  lat?:       number
+  lng?:       number
+}
+
+export interface UpdateMasterPayload {
+  firstName?: string
+  lastName?:  string
+  phone?:     string
+  bio?:       string
+  regionName?: string
+  address?:   string
+  lat?:       number
+  lng?:       number
 }
 
 export interface Pagination {
@@ -51,5 +67,3 @@ export interface Pagination {
   total:      number
   totalPages: number
 }
-
-export type SlotsByDate = Record<string, TimeSlot[]>

@@ -1,20 +1,18 @@
-// src/stores/master.store.ts
-
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { mastersApi } from '@/api/masters'
-import type { Master, MasterSearchParams, Pagination, SlotsByDate } from '@/types/master.types'
+import type { Master, MasterSearchParams, Pagination } from '@/types/master.types'
 
 export const useMasterStore = defineStore('master', () => {
   const masters    = ref<Master[]>([])
+  const myProfile  = ref<Master | null>(null)
   const pagination = ref<Pagination | null>(null)
-  const slots      = ref<SlotsByDate>({})
   const loading    = ref(false)
   const error      = ref<string | null>(null)
 
   const hasMore = computed(() =>
-      pagination.value !== null &&
-      pagination.value.page < pagination.value.totalPages
+    pagination.value !== null &&
+    pagination.value.page < pagination.value.totalPages
   )
 
   async function search(params: MasterSearchParams, append = false): Promise<void> {
@@ -23,8 +21,6 @@ export const useMasterStore = defineStore('master', () => {
 
     try {
       const result = await mastersApi.search(params)
-
-      // append=true для infinite scroll / подгрузки следующей страницы
       masters.value    = append ? [...masters.value, ...result.data] : result.data
       pagination.value = result.pagination
     } catch (e) {
@@ -35,20 +31,28 @@ export const useMasterStore = defineStore('master', () => {
     }
   }
 
-  async function fetchSlots(
-      masterId: number,
-      params: { dateFrom: string; dateTo: string; serviceId?: number }
-  ): Promise<void> {
-    const result = await mastersApi.getSlots(masterId, params)
-    slots.value  = result.data
+  async function fetchMyProfile(): Promise<void> {
+    loading.value = true
+    try {
+      myProfile.value = await mastersApi.getMyProfile()
+    } catch {
+      myProfile.value = null
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function fetchProfile(id: number): Promise<Master> {
+    const result = await mastersApi.getProfile(id)
+    return result.data
   }
 
   function reset(): void {
     masters.value    = []
+    myProfile.value  = null
     pagination.value = null
-    slots.value      = {}
     error.value      = null
   }
 
-  return { masters, pagination, slots, loading, error, hasMore, search, fetchSlots, reset }
+  return { masters, myProfile, pagination, loading, error, hasMore, search, fetchMyProfile, fetchProfile, reset }
 })

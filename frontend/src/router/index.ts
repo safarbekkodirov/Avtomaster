@@ -48,6 +48,18 @@ const router = createRouter({
       component: () => import('../pages/PaymentPage.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/master-dashboard',
+      name: 'master-dashboard',
+      component: () => import('../pages/DashboardMasterPage.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/notifications',
+      name: 'notifications',
+      component: () => import('../pages/NotificationsPage.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 
