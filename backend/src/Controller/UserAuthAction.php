@@ -9,25 +9,16 @@ use App\Component\User\TokensCreator;
 use App\Controller\Base\AbstractController;
 use App\Entity\User;
 use App\Repository\UserRepository;
-use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTEncodeFailureException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-/**
- * Class UserAuthAction
- *
- * @package App\Controller
- */
 class UserAuthAction extends AbstractController
 {
-    /**
-     * @throws JWTEncodeFailureException
-     */
     public function __invoke(
         User $data,
         UserRepository $userRepository,
         UserPasswordHasherInterface $passwordEncoder,
-        TokensCreator $tokensCreator
+        TokensCreator $tokensCreator,
     ): Response {
         $user = $userRepository->findOneByEmail($data->getEmail());
 
@@ -39,12 +30,28 @@ class UserAuthAction extends AbstractController
             $this->throwInvalidCredentials();
         }
 
-        return $this->responseNormalized($tokensCreator->create($user));
+        $tokens = $tokensCreator->create($user);
+
+        $response = [
+            'accessToken' => $tokens->getAccessToken(),
+            'expiresIn'   => 86400,
+            'user' => [
+                'id'        => $user->getId(),
+                'email'     => $user->getEmail(),
+                'roles'     => $user->getRoles(),
+                'firstName' => $user->getFirstName(),
+                'lastName'  => $user->getLastName(),
+                'avatar'    => $user->getAvatar(),
+            ],
+        ];
+
+        return new Response(
+            json_encode($response),
+            Response::HTTP_OK,
+            ['Content-Type' => 'application/json']
+        );
     }
 
-    /**
-     * @throws AuthException
-     */
     private function throwInvalidCredentials(): void
     {
         throw new AuthException('Invalid credentials');

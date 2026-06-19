@@ -1,9 +1,26 @@
+export interface Region {
+  id:   number
+  name: string
+  slug: string
+  lat:  number | null
+  lng:  number | null
+}
+
+export interface ServiceCategory {
+  id:          number
+  name:        string
+  slug:        string
+  description: string | null
+  icon:        string | null
+}
+
 export interface MasterService {
   id:              number
   name:            string
   price:           number
   durationMinutes: number
   categoryName:    string | null
+  category:        ServiceCategory | null
 }
 
 export interface Master {
@@ -20,6 +37,7 @@ export interface Master {
   reviewsCount: number
   isVerified:   boolean
   services:     MasterService[]
+  distanceKm:   number | null
 }
 
 export interface MasterSearchResult {
@@ -29,6 +47,7 @@ export interface MasterSearchResult {
 
 export interface MasterSearchParams {
   regionName?: string
+  categorySlug?: string
   lat?:         number
   lng?:         number
   radiusKm?:    number

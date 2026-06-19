@@ -59,6 +59,48 @@ security:
             methods:
                 - get
 
+        masters_search:
+            pattern: ^/api/v1/masters/search/?$
+            security: false
+            methods:
+                - get
+
+        masters_public:
+            pattern: ^/api/v1/masters(/\d+)?/?$
+            security: false
+            methods:
+                - get
+
+        masters_services_public:
+            pattern: ^/api/v1/master_services(/\d+)?/?$
+            security: false
+            methods:
+                - get
+
+        regions_public:
+            pattern: ^/api/v1/regions(/\d+)?/?$
+            security: false
+            methods:
+                - get
+
+        categories_public:
+            pattern: ^/api/v1/service_categories(/\d+)?/?$
+            security: false
+            methods:
+                - get
+
+        masters_reviews_public:
+            pattern: ^/api/v1/masters/\d+/reviews/?$
+            security: false
+            methods:
+                - get
+
+        contexts_public:
+            pattern: ^/api/v1/contexts/
+            security: false
+            methods:
+                - get
+
         main:
             stateless: true
             security: true
@@ -66,5 +108,15 @@ security:
             jwt: ~
 
     access_control:
+        - { path: ^/api/v1/users/?$, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [post] }
+        - { path: ^/api/v1/users/auth/?$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v1/users/auth/refreshToken, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v1/users/is_unique_email, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v1/masters/search, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v1/masters/\d+$, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [get] }
+        - { path: ^/api/v1/master_services, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [get] }
+        - { path: ^/api/v1/regions, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [get] }
+        - { path: ^/api/v1/service_categories, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [get] }
+        - { path: ^/api/v1/masters/\d+/reviews, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [get] }
         - { path: ^/api/v1/.+, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/v1, roles: IS_AUTHENTICATED_ANONYMOUSLY }

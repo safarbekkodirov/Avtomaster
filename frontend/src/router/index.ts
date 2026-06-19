@@ -60,13 +60,18 @@ const router = createRouter({
       component: () => import('../pages/NotificationsPage.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/admin/categories',
+      name: 'admin-categories',
+      component: () => import('../pages/CategoriesPage.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 
 router.beforeEach((to) => {
   const token = localStorage.getItem('access_token')
   if (to.meta.requiresAuth && !token) return { name: 'login' }
-  if (to.meta.guest && token) return { name: 'dashboard' }
 })
 
 export default router

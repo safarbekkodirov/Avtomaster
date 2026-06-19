@@ -26,15 +26,68 @@ class MasterRepository extends ServiceEntityRepository
         return $this->findOneBy(['user' => $userId]);
     }
 
-    public function searchByRegion(?string $regionName): array
-    {
-        $qb = $this->createQueryBuilder('m');
+    public function search(
+        ?string $regionName = null,
+        ?string $categorySlug = null,
+        ?float $minRating = null,
+        string $sortBy = 'rating',
+        int $page = 1,
+        int $perPage = 20,
+    ): array {
+        $qb = $this->createQueryBuilder('m')
+            ->leftJoin('m.services', 's')
+            ->addSelect('s')
+            ->leftJoin('s.category', 'sc')
+            ->addSelect('sc');
 
         if ($regionName) {
             $qb->andWhere('m.regionName LIKE :region')
                 ->setParameter('region', '%' . $regionName . '%');
         }
 
-        return $qb->getQuery()->getResult();
+        if ($categorySlug) {
+            $qb->andWhere('sc.slug = :categorySlug')
+                ->setParameter('categorySlug', $categorySlug);
+        }
+
+        if ($minRating !== null) {
+            $qb->andWhere('m.rating >= :minRating')
+                ->setParameter('minRating', $minRating);
+        }
+
+        $qb->andWhere('m.deletedAt IS NULL');
+
+        switch ($sortBy) {
+            case 'price':
+                $qb->orderBy('s.price', 'ASC');
+                break;
+            case 'distance':
+                $qb->orderBy('m.rating', 'DESC');
+                break;
+            default:
+                $qb->orderBy('m.rating', 'DESC');
+        }
+
+        $totalQb = clone $qb;
+        $totalQb->select('COUNT(DISTINCT m.id)');
+        $total = (int) $totalQb->getQuery()->getSingleScalarResult();
+
+        $totalPages = max(1, (int) ceil($total / $perPage));
+        $offset = ($page - 1) * $perPage;
+
+        $qb->setMaxResults($perPage)
+            ->setFirstResult($offset);
+
+        $data = $qb->getQuery()->getResult();
+
+        return [
+            'data' => $data,
+            'pagination' => [
+                'page'       => $page,
+                'perPage'    => $perPage,
+                'total'      => $total,
+                'totalPages' => $totalPages,
+            ],
+        ];
     }
 }

@@ -1,5 +1,3 @@
-// src/stores/booking.store.ts
-
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { bookingsApi } from '@/api/bookings'
@@ -10,12 +8,11 @@ import type {
   CancelBookingPayload,
   CreateBookingPayload,
 } from '@/types/booking.types'
-import type { Pagination } from '@/types/common.types'
 
 export const useBookingStore = defineStore('booking', () => {
   const bookings   = ref<Booking[]>([])
   const current    = ref<Booking | null>(null)
-  const pagination = ref<Pagination | null>(null)
+  const pagination = ref<any>(null)
   const loading    = ref(false)
   const error      = ref<string | null>(null)
 
@@ -23,9 +20,9 @@ export const useBookingStore = defineStore('booking', () => {
     loading.value = true
     error.value   = null
     try {
-      const result  = await bookingsApi.create(payload)
-      bookings.value.unshift(result.data)
-      return result.data
+      const booking = await bookingsApi.create(payload)
+      if (booking) bookings.value.unshift(booking)
+      return booking
     } catch (e) {
       error.value = extractMessage(e)
       throw e
@@ -38,16 +35,17 @@ export const useBookingStore = defineStore('booking', () => {
     loading.value = true
     try {
       const result     = await bookingsApi.list(params)
-      bookings.value   = result.data
-      pagination.value = result.pagination
+      bookings.value   = result.data ?? []
+      pagination.value = result.pagination ?? null
+    } catch {
+      bookings.value = []
     } finally {
       loading.value = false
     }
   }
 
   async function fetchOne(id: number): Promise<void> {
-    const result  = await bookingsApi.get(id)
-    current.value = result.data
+    current.value = await bookingsApi.get(id)
   }
 
   async function confirm(id: number): Promise<void> {
@@ -64,14 +62,12 @@ export const useBookingStore = defineStore('booking', () => {
 
   async function updateStatus(
       id: number,
-      action: () => Promise<{ data: Booking }>
+      action: () => Promise<Booking>
   ): Promise<void> {
-    const result  = await action()
-    // Обновляем в списке если есть
+    const booking = await action()
     const idx = bookings.value.findIndex(b => b.id === id)
-    if (idx !== -1) bookings.value[idx] = result.data
-    // Обновляем current если открыт
-    if (current.value?.id === id) current.value = result.data
+    if (idx !== -1) bookings.value[idx] = booking
+    if (current.value?.id === id) current.value = booking
   }
 
   return {

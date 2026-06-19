@@ -44,6 +44,7 @@ const canSubmit = computed(
                     @change="selectService(service.id)"
                 />
                 <span class="booking-form__service-name">{{ service.name }}</span>
+                <span v-if="service.category" class="booking-form__service-category">{{ service.category.name }}</span>
                 <span class="booking-form__service-meta">
           {{ service.durationMinutes }} мин · {{ service.price.toLocaleString('ru-RU') }} ₽
         </span>
@@ -103,6 +104,10 @@ const canSubmit = computed(
 .booking-form__service--selected { border-color: #e63946; background: #fef2f2; }
 .booking-form__service input[type="radio"] { accent-color: #e63946; }
 .booking-form__service-name { font-weight: 600; flex: 1; }
+.booking-form__service-category {
+    color: #666; font-size: 0.8rem; padding: 2px 8px;
+    background: #f0f0f0; border-radius: 4px;
+}
 .booking-form__service-meta { color: #666; font-size: 0.85rem; }
 
 .booking-form__selected {

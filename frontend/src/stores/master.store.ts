@@ -43,8 +43,7 @@ export const useMasterStore = defineStore('master', () => {
   }
 
   async function fetchProfile(id: number): Promise<Master> {
-    const result = await mastersApi.getProfile(id)
-    return result.data
+    return await mastersApi.getProfile(id)
   }
 
   function reset(): void {

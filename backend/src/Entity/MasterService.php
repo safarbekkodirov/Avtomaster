@@ -50,6 +50,10 @@ class MasterService
     #[Groups(['master:read', 'master_service:read'])]
     private ?string $categoryName = null;
 
+    #[ORM\ManyToOne(targetEntity: ServiceCategory::class)]
+    #[Groups(['master:read', 'master_service:read'])]
+    private ?ServiceCategory $category = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -111,6 +115,18 @@ class MasterService
     public function setCategoryName(?string $categoryName): self
     {
         $this->categoryName = $categoryName;
+
+        return $this;
+    }
+
+    public function getCategory(): ?ServiceCategory
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?ServiceCategory $category): self
+    {
+        $this->category = $category;
 
         return $this;
     }

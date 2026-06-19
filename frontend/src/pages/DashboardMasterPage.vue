@@ -3,7 +3,10 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.store'
 import { mastersApi } from '@/api/masters'
-import type { Master } from '@/types/master.types'
+import { bookingsApi } from '@/api/bookings'
+import LocationPicker from '@/components/common/LocationPicker.vue'
+import type { Master, ServiceCategory, Region } from '@/types/master.types'
+import type { Booking, BookingStatus } from '@/types/booking.types'
 
 const router    = useRouter()
 const authStore = useAuthStore()
@@ -12,6 +15,8 @@ const loading   = ref(true)
 const error     = ref('')
 const myProfile = ref<Master | null>(null)
 const isEditing = ref(false)
+const categories = ref<ServiceCategory[]>([])
+const regions    = ref<Region[]>([])
 
 const form = ref({
   firstName:  '',
@@ -20,22 +25,69 @@ const form = ref({
   bio:        '',
   regionName: '',
   address:    '',
+  location:   null as { lat: number; lng: number } | null,
 })
-
-const regions = [
-  'Бишкек', 'Ош', 'Каракол', 'Токмок',
-  'Джалал-Абад', 'Нарын', 'Талас',
-]
 
 const showAddService = ref(false)
 const serviceForm = ref({
   name:             '',
   price:            0,
   durationMinutes:  30,
-  categoryName:     '',
+  categoryId:       null as number | null,
 })
 
 const editingServiceId = ref<number | null>(null)
+
+const bookings = ref<Booking[]>([])
+const bookingFilter = ref<BookingStatus | ''>('')
+const bookingsLoading = ref(false)
+
+async function loadBookings() {
+  bookingsLoading.value = true
+  try {
+    const result = await bookingsApi.listMaster(bookingFilter.value as BookingStatus || undefined)
+    bookings.value = result.data
+  } catch {
+    bookings.value = []
+  } finally {
+    bookingsLoading.value = false
+  }
+}
+
+async function confirmBooking(id: number) {
+  try {
+    await bookingsApi.confirm(id)
+    await loadBookings()
+  } catch {
+    error.value = 'Ошибка подтверждения'
+  }
+}
+
+async function completeBooking(id: number) {
+  try {
+    await bookingsApi.complete(id)
+    await loadBookings()
+  } catch {
+    error.value = 'Ошибка завершения'
+  }
+}
+
+async function cancelBooking(id: number) {
+  if (!confirm('Отменить запись?')) return
+  try {
+    await bookingsApi.cancel(id)
+    await loadBookings()
+  } catch {
+    error.value = 'Ошибка отмены'
+  }
+}
+
+const statusLabels: Record<string, string> = {
+  pending: 'Ожидает',
+  confirmed: 'Подтверждена',
+  completed: 'Завершена',
+  cancelled: 'Отменена',
+}
 
 async function loadProfile() {
   loading.value = true
@@ -48,6 +100,24 @@ async function loadProfile() {
   }
 }
 
+async function loadCategories() {
+  try {
+    const result = await mastersApi.getCategories()
+    categories.value = result.member
+  } catch {
+    categories.value = []
+  }
+}
+
+async function loadRegions() {
+  try {
+    const result = await mastersApi.getRegions()
+    regions.value = result.member
+  } catch {
+    regions.value = []
+  }
+}
+
 function startCreate() {
   isEditing.value = true
   form.value = {
@@ -55,8 +125,9 @@ function startCreate() {
     lastName:   authStore.user?.lastName  ?? '',
     phone:      '',
     bio:        '',
-    regionName: 'Бишкек',
+    regionName: '',
     address:    '',
+    location:   null,
   }
 }
 
@@ -69,6 +140,7 @@ function cancelEdit() {
     bio:        '',
     regionName: '',
     address:    '',
+    location:   null,
   }
 }
 
@@ -82,6 +154,8 @@ async function saveProfile() {
       bio:        form.value.bio   || undefined,
       regionName: form.value.regionName,
       address:    form.value.address || undefined,
+      lat:        form.value.location?.lat ?? undefined,
+      lng:        form.value.location?.lng ?? undefined,
     }
 
     if (myProfile.value) {
@@ -104,6 +178,9 @@ function startEditProfile() {
     bio:        myProfile.value.bio    ?? '',
     regionName: myProfile.value.regionName,
     address:    myProfile.value.address ?? '',
+    location:   myProfile.value.lat && myProfile.value.lng
+      ? { lat: Number(myProfile.value.lat), lng: Number(myProfile.value.lng) }
+      : null,
   }
   isEditing.value = true
 }
@@ -114,18 +191,18 @@ function startAddService() {
     name:            '',
     price:           0,
     durationMinutes: 30,
-    categoryName:    '',
+    categoryId:      null,
   }
   showAddService.value = true
 }
 
-function editService(service: { id: number; name: string; price: number; durationMinutes: number; categoryName: string | null }) {
+function editService(service: { id: number; name: string; price: number; durationMinutes: number; category: { id: number } | null }) {
   editingServiceId.value = service.id
   serviceForm.value = {
     name:            service.name,
     price:           service.price,
     durationMinutes: service.durationMinutes,
-    categoryName:    service.categoryName ?? '',
+    categoryId:      service.category?.id ?? null,
   }
   showAddService.value = true
 }
@@ -143,7 +220,7 @@ async function saveService() {
       name:            serviceForm.value.name,
       price:           serviceForm.value.price,
       durationMinutes: serviceForm.value.durationMinutes,
-      categoryName:    serviceForm.value.categoryName || undefined,
+      categoryId:      serviceForm.value.categoryId ?? undefined,
     })
     await loadProfile()
     showAddService.value = false
@@ -164,7 +241,12 @@ async function deleteService(serviceId: number) {
   }
 }
 
-onMounted(loadProfile)
+onMounted(() => {
+  loadProfile()
+  loadCategories()
+  loadRegions()
+  loadBookings()
+})
 </script>
 
 <template>
@@ -203,7 +285,8 @@ onMounted(loadProfile)
           <div class="form-group">
             <label>Регион *</label>
             <select v-model="form.regionName">
-              <option v-for="r in regions" :key="r" :value="r">{{ r }}</option>
+              <option value="">Тандоо...</option>
+              <option v-for="r in regions" :key="r.id" :value="r.name">{{ r.name }}</option>
             </select>
           </div>
           <div class="form-group full-width">
@@ -215,6 +298,12 @@ onMounted(loadProfile)
             <textarea v-model="form.bio" rows="3" placeholder="Расскажите о себе..." />
           </div>
         </div>
+
+        <div class="form-group full-width" style="margin-top:1rem">
+          <label>📍 Местоположение на карте</label>
+          <LocationPicker v-model="form.location" />
+        </div>
+
         <div class="form-actions">
           <button class="btn-primary" @click="saveProfile">Сохранить</button>
           <button class="btn-secondary" @click="cancelEdit">Отмена</button>
@@ -264,7 +353,7 @@ onMounted(loadProfile)
             <div class="service-item__info">
               <span class="service-item__name">{{ service.name }}</span>
               <span class="service-item__duration">{{ service.durationMinutes }} мин</span>
-              <span v-if="service.categoryName" class="service-item__category">{{ service.categoryName }}</span>
+              <span v-if="service.category" class="service-item__category">{{ service.category.name }}</span>
             </div>
             <div class="service-item__right">
               <span class="service-item__price">{{ service.price.toLocaleString('ru-RU') }} ₽</span>
@@ -292,12 +381,58 @@ onMounted(loadProfile)
             </div>
             <div class="form-group">
               <label>Категория</label>
-              <input v-model="serviceForm.categoryName" placeholder="Категория" />
+              <select v-model="serviceForm.categoryId">
+                <option :value="null">Без категории</option>
+                <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
+              </select>
             </div>
           </div>
           <div class="form-actions">
             <button class="btn-primary" @click="saveService">Сохранить</button>
             <button class="btn-secondary" @click="cancelService">Отмена</button>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- Записи клиентов -->
+    <template v-if="myProfile && !isEditing">
+      <div class="card">
+        <div class="card__header">
+          <h3 class="card__title">Записи клиентов</h3>
+          <select v-model="bookingFilter" class="filter-select" @change="loadBookings">
+            <option value="">Все</option>
+            <option value="pending">Ожидает</option>
+            <option value="confirmed">Подтверждена</option>
+            <option value="completed">Завершена</option>
+            <option value="cancelled">Отменена</option>
+          </select>
+        </div>
+
+        <div v-if="bookingsLoading" class="loading-small">Загрузка...</div>
+
+        <div v-else-if="!bookings.length" class="empty-text">Записей нет</div>
+
+        <div v-else class="bookings-list">
+          <div v-for="b in bookings" :key="b.id" class="booking-item">
+            <div class="booking-item__header">
+              <span class="booking-item__client">{{ b.clientFirstName }} {{ b.clientLastName }}</span>
+              <span class="status-badge" :class="`status-badge--${b.status}`">{{ statusLabels[b.status] }}</span>
+            </div>
+            <div class="booking-item__details">
+              <span class="booking-item__service">{{ b.serviceName }}</span>
+              <span class="booking-item__time">{{ b.slotDate }} · {{ b.slotStartTime }} — {{ b.slotEndTime }}</span>
+              <span class="booking-item__price">{{ Number(b.total).toLocaleString('ru-RU') }} ₽</span>
+            </div>
+            <div v-if="b.notes" class="booking-item__notes">{{ b.notes }}</div>
+            <div class="booking-item__actions" v-if="b.status === 'pending'">
+              <button class="btn-sm btn-confirm" @click="confirmBooking(b.id)">Подтвердить</button>
+              <button class="btn-sm btn-cancel" @click="cancelBooking(b.id)">Отменить</button>
+            </div>
+            <div class="booking-item__actions" v-else-if="b.status === 'confirmed'">
+              <button class="btn-sm btn-complete" @click="completeBooking(b.id)">Завершить</button>
+              <button class="btn-sm btn-cancel" @click="cancelBooking(b.id)">Отменить</button>
+            </div>
           </div>
         </div>
       </div>
@@ -590,4 +725,130 @@ h1 {
 .service-form h4 {
   margin: 0 0 1rem;
 }
+
+.card {
+  background: white;
+  border-radius: 14px;
+  padding: 1.5rem;
+  border: 1px solid #eee;
+  margin-top: 1.5rem;
+}
+
+.card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.card__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.filter-select {
+  padding: 6px 12px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  background: white;
+}
+
+.loading-small {
+  text-align: center;
+  padding: 1.5rem;
+  color: #999;
+}
+
+.empty-text {
+  text-align: center;
+  padding: 1.5rem;
+  color: #aaa;
+}
+
+.bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.booking-item {
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+}
+
+.booking-item__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.booking-item__client {
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.status-badge {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-badge--pending   { background: #fff8e1; color: #f57f17; }
+.status-badge--confirmed { background: #e3f2fd; color: #1565c0; }
+.status-badge--completed { background: #e8f5e9; color: #2e7d32; }
+.status-badge--cancelled { background: #fce4ec; color: #c62828; }
+
+.booking-item__details {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.booking-item__service {
+  font-weight: 600;
+  color: #333;
+}
+
+.booking-item__price {
+  font-weight: 700;
+  color: #e63946;
+}
+
+.booking-item__notes {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #888;
+  font-style: italic;
+}
+
+.booking-item__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.btn-sm {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-confirm { background: #e3f2fd; color: #1565c0; }
+.btn-confirm:hover { background: #bbdefb; }
+.btn-complete { background: #e8f5e9; color: #2e7d32; }
+.btn-complete:hover { background: #c8e6c9; }
+.btn-cancel { background: #fce4ec; color: #c62828; }
+.btn-cancel:hover { background: #f8bbd0; }
 </style>

@@ -4,33 +4,50 @@ import type {
   BookingListParams,
   CancelBookingPayload,
   CreateBookingPayload,
+  BookingStatus,
 } from '@/types/booking.types'
-import type { PaginatedResponse } from '@/types/common.types'
 
 const PATCH_HEADERS = { 'Content-Type': 'application/merge-patch+json' }
 
 export const bookingsApi = {
-  create(payload: CreateBookingPayload): Promise<{ data: Booking }> {
-    return client.post<{ data: Booking }>('/api/v1/bookings', payload).then(r => r.data)
+  async create(payload: CreateBookingPayload): Promise<Booking> {
+    const r = await client.post('/api/v1/bookings', payload)
+    return r.data as any
   },
 
-  list(params?: BookingListParams): Promise<PaginatedResponse<Booking>> {
-    return client.get<PaginatedResponse<Booking>>('/api/v1/bookings', { params }).then(r => r.data)
+  async list(params?: BookingListParams): Promise<{ data: Booking[]; pagination: any }> {
+    const r = await client.get('/api/v1/bookings', { params })
+    const body = r.data as any
+    return {
+      data: body.member ?? body.data ?? [],
+      pagination: body.pagination ?? { page: 1, totalPages: 1, total: 0 },
+    }
   },
 
-  get(id: number): Promise<{ data: Booking }> {
-    return client.get<{ data: Booking }>(`/api/v1/bookings/${id}`).then(r => r.data)
+  async get(id: number): Promise<Booking> {
+    const r = await client.get(`/api/v1/bookings/${id}`)
+    return r.data as any
   },
 
-  confirm(id: number): Promise<{ data: Booking }> {
-    return client.patch<{ data: Booking }>(`/api/v1/bookings/${id}/confirm`, {}, { headers: PATCH_HEADERS }).then(r => r.data)
+  async confirm(id: number): Promise<Booking> {
+    const r = await client.patch(`/api/v1/bookings/${id}/confirm`, {}, { headers: PATCH_HEADERS })
+    return r.data as any
   },
 
-  complete(id: number): Promise<{ data: Booking }> {
-    return client.patch<{ data: Booking }>(`/api/v1/bookings/${id}/complete`, {}, { headers: PATCH_HEADERS }).then(r => r.data)
+  async complete(id: number): Promise<Booking> {
+    const r = await client.patch(`/api/v1/bookings/${id}/complete`, {}, { headers: PATCH_HEADERS })
+    return r.data as any
   },
 
-  cancel(id: number, payload?: CancelBookingPayload): Promise<{ data: Booking }> {
-    return client.patch<{ data: Booking }>(`/api/v1/bookings/${id}/cancel`, payload ?? {}, { headers: PATCH_HEADERS }).then(r => r.data)
+  async cancel(id: number, payload?: CancelBookingPayload): Promise<Booking> {
+    const r = await client.patch(`/api/v1/bookings/${id}/cancel`, payload ?? {}, { headers: PATCH_HEADERS })
+    return r.data as any
+  },
+
+  async listMaster(status?: BookingStatus): Promise<{ data: Booking[] }> {
+    const params: Record<string, string> = {}
+    if (status) params.status = status
+    const r = await client.get('/api/v1/bookings/master', { params })
+    return r.data as any
   },
 }

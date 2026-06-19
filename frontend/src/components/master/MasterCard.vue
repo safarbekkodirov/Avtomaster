@@ -8,14 +8,14 @@ const props = defineProps<{ master: Master }>()
 const fullName    = computed(() => `${props.master.firstName} ${props.master.lastName}`)
 const minPrice    = computed(() =>
     props.master.services.length
-        ? Math.min(...props.master.services.map(s => s.price))
+        ? Math.min(...props.master.services.map(s => Number(s.price)))
         : null
 )
-const distanceStr = computed(() =>
-    props.master.distanceKm !== null
-        ? `${props.master.distanceKm.toFixed(1)} км`
-        : null
-)
+const ratingStr   = computed(() => Number(props.master.rating).toFixed(1))
+const distanceStr = computed(() => {
+    const d = props.master.distanceKm
+    return d != null ? `${Number(d).toFixed(1)} км` : null
+})
 </script>
 
 <template>
@@ -45,8 +45,8 @@ const distanceStr = computed(() =>
         </div>
 
         <div class="master-card__stats">
-      <span class="master-card__rating" :aria-label="`Рейтинг ${master.rating}`">
-        ★ {{ master.rating.toFixed(1) }}
+      <span class="master-card__rating" :aria-label="`Рейтинг ${ratingStr}`">
+        ★ {{ ratingStr }}
       </span>
             <span class="master-card__reviews">({{ master.reviewsCount }})</span>
             <span v-if="distanceStr" class="master-card__distance">{{ distanceStr }}</span>
@@ -58,7 +58,7 @@ const distanceStr = computed(() =>
                 :key="service.id"
                 class="master-card__service"
             >
-                {{ service.name }} — {{ service.price.toLocaleString('ru-RU') }} ₽
+                {{ service.name }} — {{ Number(service.price).toLocaleString('ru-RU') }} ₽
             </li>
         </ul>
 

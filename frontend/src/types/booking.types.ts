@@ -14,6 +14,8 @@ export interface Booking {
   masterId:        number
   masterFirstName: string
   masterLastName:  string
+  clientFirstName: string
+  clientLastName:  string
   slotDate:        string
   slotStartTime:   string
   slotEndTime:     string

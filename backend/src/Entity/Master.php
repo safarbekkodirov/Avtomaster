@@ -11,8 +11,13 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use App\Controller\MasterCreateAction;
+use App\Controller\MasterMyProfileAction;
+use App\Controller\MasterSearchAction;
+use App\Controller\MasterServiceCreateAction;
+use App\Controller\MasterServicesListAction;
 use App\Entity\Interfaces\CreatedAtSettableInterface;
 use App\Entity\Interfaces\DeletedAtSettableInterface;
 use App\Entity\Interfaces\UpdatedAtSettableInterface;
@@ -32,6 +37,22 @@ use Symfony\Component\Validator\Constraints as Assert;
         new GetCollection(
             normalizationContext: ['groups' => ['masters:read']],
         ),
+        new GetCollection(
+            uriTemplate: 'masters/search',
+            controller: MasterSearchAction::class,
+            name: 'masterSearch',
+            read: false,
+            deserialize: false,
+        ),
+        new Get(
+            uriTemplate: 'masters/me',
+            controller: MasterMyProfileAction::class,
+            security: "is_granted('ROLE_USER')",
+            name: 'myProfile',
+            normalizationContext: ['groups' => ['master:read']],
+            read: false,
+            deserialize: false,
+        ),
         new Get(
             normalizationContext: ['groups' => ['master:read']],
         ),
@@ -43,6 +64,21 @@ use Symfony\Component\Validator\Constraints as Assert;
             normalizationContext: ['groups' => ['master:read']],
             denormalizationContext: ['groups' => ['master:write']],
             security: "object.getUser() == user or is_granted('ROLE_ADMIN')",
+        ),
+        new Post(
+            uriTemplate: 'masters/{id}/services',
+            controller: MasterServiceCreateAction::class,
+            security: "is_granted('ROLE_USER')",
+            name: 'addService',
+            read: false,
+            deserialize: false,
+        ),
+        new Get(
+            uriTemplate: 'masters/{id}/services',
+            controller: MasterServicesListAction::class,
+            name: 'listServices',
+            read: false,
+            deserialize: false,
         ),
         new Delete(
             security: "object.getUser() == user or is_granted('ROLE_ADMIN')",

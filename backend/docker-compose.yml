@@ -1,4 +1,16 @@
 services:
+    frontend:
+        container_name: ${DOCKER_PROJECT_NAME}_frontend
+        build: ../frontend
+        restart: unless-stopped
+        volumes:
+            - ../frontend:/app
+            - /app/node_modules
+        ports:
+            - 5173:5173
+        environment:
+            - VITE_API_URL=http://localhost:8282
+
     php:
         container_name: ${DOCKER_PROJECT_NAME}_php
         build: ./docker/php

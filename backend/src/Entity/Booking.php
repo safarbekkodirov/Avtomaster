@@ -16,6 +16,7 @@ use App\Controller\BookingCreateAction;
 use App\Controller\BookingConfirmAction;
 use App\Controller\BookingCompleteAction;
 use App\Controller\BookingCancelAction;
+use App\Controller\MasterBookingsAction;
 use App\Entity\Interfaces\CreatedAtSettableInterface;
 use App\Entity\Interfaces\DeletedAtSettableInterface;
 use App\Entity\Interfaces\UpdatedAtSettableInterface;
@@ -33,6 +34,15 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(
             normalizationContext: ['groups' => ['booking:list']],
+        ),
+        new Get(
+            uriTemplate: '/bookings/master',
+            controller: MasterBookingsAction::class,
+            security: "is_granted('ROLE_USER')",
+            name: 'masterBookings',
+            read: false,
+            deserialize: false,
+            normalizationContext: ['groups' => ['booking:read', 'booking:list']],
         ),
         new Get(
             normalizationContext: ['groups' => ['booking:read']],
@@ -289,5 +299,17 @@ class Booking implements
     public function getMasterId(): ?int
     {
         return $this->master?->getId();
+    }
+
+    #[Groups(['booking:read', 'booking:list'])]
+    public function getClientFirstName(): string
+    {
+        return $this->client?->getFirstName() ?? '';
+    }
+
+    #[Groups(['booking:read', 'booking:list'])]
+    public function getClientLastName(): string
+    {
+        return $this->client?->getLastName() ?? '';
     }
 }

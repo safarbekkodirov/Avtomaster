@@ -24,4 +24,5 @@ export interface RegisterPayload {
   firstName: string
   lastName:  string
   role:      'client' | 'master'
+  phone?:    string
 }

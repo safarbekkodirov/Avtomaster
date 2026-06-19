@@ -5,6 +5,8 @@ import type {
   MasterSearchResult,
   CreateMasterPayload,
   UpdateMasterPayload,
+  ServiceCategory,
+  Region,
 } from '@/types/master.types'
 
 export const mastersApi = {
@@ -14,15 +16,27 @@ export const mastersApi = {
       .then(r => r.data)
   },
 
-  getProfile(id: number): Promise<{ data: Master }> {
+  getProfile(id: number): Promise<Master> {
     return client
-      .get<{ data: Master }>(`/api/v1/masters/${id}`)
-      .then(r => r.data)
+      .get<Master>(`/api/v1/masters/${id}`)
+      .then(r => r.data as any)
   },
 
   getMyProfile(): Promise<Master> {
     return client
       .get<Master>('/api/v1/masters/me')
+      .then(r => r.data)
+  },
+
+  getCategories(): Promise<{ member: ServiceCategory[] }> {
+    return client
+      .get<{ member: ServiceCategory[] }>('/api/v1/service_categories')
+      .then(r => r.data)
+  },
+
+  getRegions(): Promise<{ member: Region[] }> {
+    return client
+      .get<{ member: Region[] }>('/api/v1/regions')
       .then(r => r.data)
   },
 
@@ -42,7 +56,7 @@ export const mastersApi = {
     name: string
     price: number
     durationMinutes: number
-    categoryName?: string
+    categoryId?: number
   }): Promise<Master> {
     return client
       .post<Master>(`/api/v1/masters/${masterId}/services`, service)
@@ -52,6 +66,24 @@ export const mastersApi = {
   deleteService(masterId: number, serviceId: number): Promise<void> {
     return client
       .delete(`/api/v1/masters/${masterId}/services/${serviceId}`)
+      .then(() => undefined)
+  },
+
+  createCategory(data: { name: string; description?: string; icon?: string }): Promise<ServiceCategory> {
+    return client
+      .post<ServiceCategory>('/api/v1/service_categories', data)
+      .then(r => r.data)
+  },
+
+  updateCategory(id: number, data: { name?: string; description?: string; icon?: string }): Promise<ServiceCategory> {
+    return client
+      .patch<ServiceCategory>(`/api/v1/service_categories/${id}`, data)
+      .then(r => r.data)
+  },
+
+  deleteCategory(id: number): Promise<void> {
+    return client
+      .delete(`/api/v1/service_categories/${id}`)
       .then(() => undefined)
   },
 }

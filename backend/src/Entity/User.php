@@ -142,11 +142,11 @@ class User implements
     #[Groups(['users:read', 'user:write', 'user:put:write', 'user:isUniqueEmail:write'])]
     private ?string $email = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups(['user:read'])]
     private ?string $firstName = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups(['user:read'])]
     private ?string $lastName = null;
 
