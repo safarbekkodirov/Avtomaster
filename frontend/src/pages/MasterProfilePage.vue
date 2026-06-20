@@ -113,7 +113,7 @@ onMounted(async () => {
               <span class="service-item__meta">{{ service.durationMinutes }} мин</span>
               <span v-if="service.category" class="service-item__cat">{{ service.category.name }}</span>
             </div>
-            <span class="service-item__price">{{ Number(service.price).toLocaleString('ru-RU') }} ₽</span>
+            <span class="service-item__price">{{ Number(service.price).toLocaleString('ru-RU') }} сом</span>
           </div>
         </div>
         <p v-else class="empty-text">Услуги пока не добавлены</p>

@@ -58,12 +58,12 @@ const distanceStr = computed(() => {
                 :key="service.id"
                 class="master-card__service"
             >
-                {{ service.name }} — {{ Number(service.price).toLocaleString('ru-RU') }} ₽
+                {{ service.name }} — {{ Number(service.price).toLocaleString('ru-RU') }} сом
             </li>
         </ul>
 
         <p v-if="minPrice !== null" class="master-card__price">
-            от {{ minPrice.toLocaleString('ru-RU') }} ₽
+            от {{ minPrice.toLocaleString('ru-RU') }} сом
         </p>
     </RouterLink>
 </template>

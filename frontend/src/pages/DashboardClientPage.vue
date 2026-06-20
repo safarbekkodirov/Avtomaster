@@ -86,7 +86,7 @@ const statusLabels: Record<string, string> = {
           <div class="booking-card__details">
             <span class="booking-card__detail">📅 {{ b.slotDate }}</span>
             <span class="booking-card__detail">🕐 {{ b.slotStartTime }} — {{ b.slotEndTime }}</span>
-            <span class="booking-card__price">{{ Number(b.total).toLocaleString('ru-RU') }} ₽</span>
+            <span class="booking-card__price">{{ Number(b.total).toLocaleString('ru-RU') }} сом</span>
           </div>
           <div class="booking-card__footer">
             <span class="booking-card__hint">Нажмите для подробностей →</span>

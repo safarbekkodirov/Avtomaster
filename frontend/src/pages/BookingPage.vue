@@ -84,7 +84,7 @@ function onReviewSubmitted(): void {
           </div>
           <div class="booking-card__row">
             <span class="booking-card__label">Стоимость</span>
-            <span class="booking-card__value booking-card__price">{{ store.current.total }} ₽</span>
+            <span class="booking-card__value booking-card__price">{{ store.current.total }} сом</span>
           </div>
           <div v-if="store.current.notes" class="booking-card__row">
             <span class="booking-card__label">Примечание</span>

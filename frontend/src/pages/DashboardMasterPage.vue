@@ -356,7 +356,7 @@ onMounted(() => {
               <span v-if="service.category" class="service-item__category">{{ service.category.name }}</span>
             </div>
             <div class="service-item__right">
-              <span class="service-item__price">{{ service.price.toLocaleString('ru-RU') }} ₽</span>
+              <span class="service-item__price">{{ service.price.toLocaleString('ru-RU') }} сом</span>
               <button class="btn-icon" @click="editService(service)" title="Редактировать">✏️</button>
               <button class="btn-icon btn-icon--danger" @click="deleteService(service.id)" title="Удалить">🗑️</button>
             </div>
@@ -372,7 +372,7 @@ onMounted(() => {
               <input v-model="serviceForm.name" placeholder="Название услуги" />
             </div>
             <div class="form-group">
-              <label>Цена (₽) *</label>
+              <label>Цена (сом) *</label>
               <input v-model.number="serviceForm.price" type="number" min="0" />
             </div>
             <div class="form-group">
@@ -422,7 +422,7 @@ onMounted(() => {
             <div class="booking-item__details">
               <span class="booking-item__service">{{ b.serviceName }}</span>
               <span class="booking-item__time">{{ b.slotDate }} · {{ b.slotStartTime }} — {{ b.slotEndTime }}</span>
-              <span class="booking-item__price">{{ Number(b.total).toLocaleString('ru-RU') }} ₽</span>
+              <span class="booking-item__price">{{ Number(b.total).toLocaleString('ru-RU') }} сом</span>
             </div>
             <div v-if="b.notes" class="booking-item__notes">{{ b.notes }}</div>
             <div class="booking-item__actions" v-if="b.status === 'pending'">

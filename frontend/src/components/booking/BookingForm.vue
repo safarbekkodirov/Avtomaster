@@ -44,7 +44,7 @@ const canSubmit = computed(
                 <span class="booking-form__service-name">{{ service.name }}</span>
                 <span v-if="service.category" class="booking-form__service-category">{{ service.category.name }}</span>
                 <span class="booking-form__service-meta">
-                    {{ service.durationMinutes }} мин · {{ service.price.toLocaleString('ru-RU') }} ₽
+                    {{ service.durationMinutes }} мин · {{ service.price.toLocaleString('ru-RU') }} сом
                 </span>
             </label>
         </fieldset>

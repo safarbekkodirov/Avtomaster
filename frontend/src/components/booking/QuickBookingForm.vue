@@ -102,7 +102,7 @@ async function submit() {
               @change="selectService(service.id)"
             />
             <span class="service-option__name">{{ service.name }}</span>
-            <span class="service-option__price">{{ service.price.toLocaleString('ru-RU') }} ₽</span>
+            <span class="service-option__price">{{ service.price.toLocaleString('ru-RU') }} сом</span>
           </label>
         </div>
       </div>

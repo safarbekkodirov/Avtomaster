@@ -407,7 +407,7 @@ onMounted(() => {
                       <div class="services-grid">
                         <div v-for="s in m.services" :key="s.id" class="service-chip">
                           <span class="service-chip__name">{{ s.name }}</span>
-                          <span class="service-chip__price">{{ Number(s.price).toLocaleString('ru-RU') }} ₽</span>
+                          <span class="service-chip__price">{{ Number(s.price).toLocaleString('ru-RU') }} сом</span>
                           <span class="service-chip__duration">{{ s.durationMinutes }} мин</span>
                         </div>
                       </div>
