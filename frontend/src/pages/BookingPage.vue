@@ -47,11 +47,11 @@ function onReviewSubmitted(): void {
 
     <div v-else-if="!store.current" class="booking-page__error">
       <p>Бронирование не найдено</p>
-      <RouterLink to="/dashboard">Вернуться в кабинет</RouterLink>
+      <RouterLink to="/search">К поиску мастеров</RouterLink>
     </div>
 
     <template v-else>
-      <RouterLink to="/dashboard" class="booking-page__back">← Вернуться в кабинет</RouterLink>
+      <RouterLink to="/search" class="booking-page__back">← К поиску мастеров</RouterLink>
       <div class="booking-card">
         <div class="booking-card__header">
           <h1>Запись #{{ store.current.id }}</h1>

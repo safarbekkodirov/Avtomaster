@@ -43,7 +43,7 @@ async function submit() {
     if (role.value === 'master') {
       router.push({ name: 'master-dashboard' })
     } else {
-      router.push({ name: 'dashboard' })
+      router.push({ name: 'search' })
     }
   } catch {
     error.value = 'Ошибка регистрации'

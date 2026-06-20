@@ -37,12 +37,6 @@ const router = createRouter({
       meta: { guest: true },
     },
     {
-      path: '/dashboard',
-      name: 'dashboard',
-      component: () => import('../pages/DashboardClientPage.vue'),
-      meta: { requiresAuth: true },
-    },
-    {
       path: '/payment/:bookingId',
       name: 'payment',
       component: () => import('../pages/PaymentPage.vue'),
