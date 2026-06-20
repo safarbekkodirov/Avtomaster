@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth.store'
 import { mastersApi } from '@/api/masters'
 import BookingForm from '@/components/booking/BookingForm.vue'
 import ReviewList from '@/components/review/ReviewList.vue'
@@ -9,6 +10,7 @@ import type { Master } from '@/types/master.types'
 
 const route  = useRoute()
 const router = useRouter()
+const auth   = useAuthStore()
 const master = ref<Master | null>(null)
 const loading = ref(true)
 const error   = ref('')
@@ -138,7 +140,22 @@ onMounted(async () => {
           <span class="content-card__icon">📅</span>
           <h2 class="content-card__title">Записаться</h2>
         </div>
-        <BookingForm :master="master" />
+        <template v-if="auth.isAuth">
+          <BookingForm :master="master" />
+        </template>
+        <template v-else>
+          <div class="auth-prompt">
+            <p>Чтобы записаться к мастеру, войдите или зарегистрируйтесь</p>
+            <div class="auth-prompt__buttons">
+              <button class="auth-btn auth-btn--primary" @click="router.push({ name: 'login' })">
+                Войти
+              </button>
+              <button class="auth-btn auth-btn--outline" @click="router.push({ name: 'register' })">
+                Зарегистрироваться
+              </button>
+            </div>
+          </div>
+        </template>
       </section>
 
       <!-- Reviews -->
@@ -303,6 +320,35 @@ onMounted(async () => {
 }
 
 .empty-text { color: rgba(255,255,255,0.3); margin: 0; }
+
+.auth-prompt {
+  text-align: center; padding: 1.5rem;
+}
+.auth-prompt p {
+  margin: 0 0 1.25rem; color: rgba(255,255,255,0.5); font-size: 0.95rem;
+}
+.auth-prompt__buttons {
+  display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;
+}
+.auth-btn {
+  padding: 12px 28px; border-radius: 12px; font-size: 0.95rem;
+  font-weight: 700; cursor: pointer; transition: all 0.25s; border: none;
+}
+.auth-btn--primary {
+  background: linear-gradient(135deg, #e63946, #d32f3f); color: white;
+}
+.auth-btn--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(230,57,70,0.3);
+}
+.auth-btn--outline {
+  background: rgba(255,255,255,0.08); color: white;
+  border: 1.5px solid rgba(255,255,255,0.2);
+}
+.auth-btn--outline:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.3);
+}
 
 @media (max-width: 640px) {
   .profile-header { flex-direction: column; text-align: center; }
