@@ -54,7 +54,7 @@ export interface UpdateMasterPayload {
 export const adminApi = {
   getUsers(): Promise<{ member: AdminUser[] }> {
     return client
-      .get<{ member: AdminUser[] }>('/api/v1/users')
+      .get<{ member: AdminUser[] }>('/api/v1/users', { params: { itemsPerPage: 100 } })
       .then(r => r.data)
   },
 
@@ -66,7 +66,7 @@ export const adminApi = {
 
   getMasters(): Promise<{ member: AdminMaster[] }> {
     return client
-      .get<{ member: AdminMaster[] }>('/api/v1/masters')
+      .get<{ member: AdminMaster[] }>('/api/v1/masters', { params: { itemsPerPage: 100 } })
       .then(r => r.data)
   },
 
@@ -99,7 +99,7 @@ export const adminApi = {
 
   getRegions(): Promise<{ member: { id: number; name: string }[] }> {
     return client
-      .get('/api/v1/regions')
+      .get('/api/v1/regions', { params: { itemsPerPage: 100 } })
       .then(r => r.data)
   },
 }

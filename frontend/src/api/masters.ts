@@ -30,13 +30,13 @@ export const mastersApi = {
 
   getCategories(): Promise<{ member: ServiceCategory[] }> {
     return client
-      .get<{ member: ServiceCategory[] }>('/api/v1/service_categories')
+      .get<{ member: ServiceCategory[] }>('/api/v1/service_categories', { params: { itemsPerPage: 100 } })
       .then(r => r.data)
   },
 
   getRegions(): Promise<{ member: Region[] }> {
     return client
-      .get<{ member: Region[] }>('/api/v1/regions')
+      .get<{ member: Region[] }>('/api/v1/regions', { params: { itemsPerPage: 100 } })
       .then(r => r.data)
   },
 
