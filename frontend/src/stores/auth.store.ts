@@ -9,6 +9,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isAuth   = computed(() => token.value !== null)
   const isMaster = computed(() => user.value?.roles.includes('ROLE_MASTER') ?? false)
+  const isAdmin  = computed(() => user.value?.roles.includes('ROLE_ADMIN') ?? false)
 
   async function login(payload: LoginPayload) {
     const result = await authApi.login(payload)
@@ -34,5 +35,5 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('access_token')
   }
 
-  return { token, user, isAuth, isMaster, login, register, logout, $reset }
+  return { token, user, isAuth, isMaster, isAdmin, login, register, logout, $reset }
 })

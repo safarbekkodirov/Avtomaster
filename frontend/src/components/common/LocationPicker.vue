@@ -102,7 +102,7 @@ onUnmounted(() => { map?.remove() })
     <div class="location-search">
       <input
         v-model="addressQuery"
-        placeholder="Даректи издөө..."
+        placeholder="Поиск адреса..."
         @keyup.enter="searchAddress"
       />
       <button @click="searchAddress" :disabled="searching">

@@ -33,6 +33,7 @@ const statusLabels: Record<string, string> = {
         <span class="user-name">{{ auth.user?.firstName }} {{ auth.user?.lastName }}</span>
         <RouterLink to="/notifications" class="btn-ghost">Уведомления</RouterLink>
         <RouterLink v-if="auth.isMaster" to="/master-dashboard" class="btn-outline">Кабинет мастера</RouterLink>
+        <RouterLink v-if="auth.isAdmin" to="/admin" class="btn-outline">Админ панель</RouterLink>
         <button class="btn-ghost" @click="logout">Выйти</button>
       </div>
     </header>

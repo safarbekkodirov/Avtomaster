@@ -13,6 +13,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\MasterDeleteAction;
 use App\Controller\MasterCreateAction;
 use App\Controller\MasterMyProfileAction;
 use App\Controller\MasterSearchAction;
@@ -81,6 +82,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             deserialize: false,
         ),
         new Delete(
+            controller: MasterDeleteAction::class,
             security: "object.getUser() == user or is_granted('ROLE_ADMIN')",
         ),
     ],
@@ -154,7 +156,7 @@ class Master implements
     private ?bool $isVerified = false;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['master:read'])]
+    #[Groups(['master:read', 'masters:read'])]
     private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
@@ -165,7 +167,7 @@ class Master implements
     private ?\DateTimeInterface $deletedAt = null;
 
     #[ORM\OneToMany(targetEntity: MasterService::class, mappedBy: 'master', orphanRemoval: true, cascade: ['persist'])]
-    #[Groups(['master:read'])]
+    #[Groups(['master:read', 'masters:read'])]
     private Collection $services;
 
     public function __construct()

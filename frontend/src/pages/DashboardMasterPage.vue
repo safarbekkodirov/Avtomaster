@@ -285,7 +285,7 @@ onMounted(() => {
           <div class="form-group">
             <label>Регион *</label>
             <select v-model="form.regionName">
-              <option value="">Тандоо...</option>
+              <option value="">Выберите...</option>
               <option v-for="r in regions" :key="r.id" :value="r.name">{{ r.name }}</option>
             </select>
           </div>

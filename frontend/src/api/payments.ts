@@ -9,4 +9,10 @@ export const paymentsApi = {
         .post<{ data: Payment }>(`/api/v1/bookings/${bookingId}/payment`)
         .then(r => r.data)
   },
+
+  complete(bookingId: number): Promise<{ data: Payment }> {
+    return client
+        .post<{ data: Payment }>(`/api/v1/bookings/${bookingId}/payment/complete`)
+        .then(r => r.data)
+  },
 }

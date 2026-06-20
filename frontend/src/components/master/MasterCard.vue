@@ -71,35 +71,45 @@ const distanceStr = computed(() => {
 <style scoped>
 .master-card {
     display: block; text-decoration: none; color: inherit;
-    padding: 1.5rem; border: 1px solid #e5e5e5; border-radius: 12px;
-    transition: box-shadow 0.2s, border-color 0.2s;
+    padding: 1.5rem; background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 16px;
+    transition: all 0.25s; backdrop-filter: blur(10px);
 }
-.master-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); border-color: #e63946; }
+.master-card:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(230,57,70,0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+}
 
 .master-card__header { display: flex; gap: 1rem; margin-bottom: 1rem; }
 .master-card__avatar {
-    width: 56px; height: 56px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+    width: 56px; height: 56px; border-radius: 14px; object-fit: cover; flex-shrink: 0;
 }
 .master-card__avatar-placeholder {
-    width: 56px; height: 56px; border-radius: 50%;
-    background: linear-gradient(135deg, #1a1a2e, #e63946); flex-shrink: 0;
+    width: 56px; height: 56px; border-radius: 14px;
+    background: linear-gradient(135deg, #e63946, #ff6b6b); flex-shrink: 0;
 }
 .master-card__meta { flex: 1; min-width: 0; }
-.master-card__name { margin: 0 0 4px; font-size: 1.1rem; font-weight: 700; }
-.master-card__verified { color: #28a745; font-size: 0.8rem; }
-.master-card__region { margin: 0; font-size: 0.85rem; color: #666; }
-.master-card__address { margin: 2px 0 0; font-size: 0.8rem; color: #999; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.master-card__name { margin: 0 0 4px; font-size: 1.1rem; font-weight: 700; color: white; }
+.master-card__verified { color: #4ade80; font-size: 0.8rem; }
+.master-card__region { margin: 0; font-size: 0.85rem; color: rgba(255,255,255,0.4); }
+.master-card__address { margin: 2px 0 0; font-size: 0.8rem; color: rgba(255,255,255,0.25); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .master-card__stats { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
-.master-card__rating { font-weight: 700; color: #f4a261; font-size: 1rem; }
-.master-card__reviews { color: #999; font-size: 0.85rem; }
+.master-card__rating { font-weight: 700; color: #f59e0b; font-size: 1rem; }
+.master-card__reviews { color: rgba(255,255,255,0.3); font-size: 0.85rem; }
 .master-card__distance {
-    margin-left: auto; padding: 2px 8px; background: #e8f5e9;
-    color: #2e7d32; border-radius: 4px; font-size: 0.8rem; font-weight: 600;
+    margin-left: auto; padding: 2px 8px; background: rgba(74,222,128,0.1);
+    color: #4ade80; border-radius: 6px; font-size: 0.8rem; font-weight: 600;
 }
 
 .master-card__services { list-style: none; padding: 0; margin: 0 0 0.75rem; }
-.master-card__service { font-size: 0.85rem; color: #555; padding: 2px 0; }
+.master-card__service {
+    font-size: 0.85rem; color: rgba(255,255,255,0.5); padding: 2px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.master-card__service:last-child { border-bottom: none; }
 
 .master-card__price { margin: 0; font-weight: 700; color: #e63946; font-size: 0.95rem; }
 </style>

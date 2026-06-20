@@ -24,11 +24,11 @@ const icons = [
   { value: 'wrench',   label: '🔧 Ремонт' },
   { value: 'car',      label: '🚗 Кузов' },
   { value: 'zap',      label: '⚡ Электрика' },
-  { value: 'circle',   label: '⭕ Дөңгөлөк' },
-  { value: 'droplets', label: '💧 Жууу' },
-  { value: 'settings', label: '⚙️ Жабдыктар' },
-  { value: 'shield',   label: '🛡️ Коопсуздук' },
-  { value: 'tool',     label: '🔨 Түзөтүү' },
+  { value: 'circle',   label: '⭕ Шина' },
+  { value: 'droplets', label: '💧 Мойка' },
+  { value: 'settings', label: '⚙️ Оборудование' },
+  { value: 'shield',   label: '🛡️ Безопасность' },
+  { value: 'tool',     label: '🔨 Ремонт' },
 ]
 
 async function loadCategories() {
@@ -109,10 +109,10 @@ onMounted(loadCategories)
 <template>
   <div class="categories-page">
     <header class="page-header">
-      <h1>Категорияларды башкаруу</h1>
+      <h1>Управление категориями</h1>
       <div class="page-actions">
-        <button class="btn-primary" @click="startCreate">+ Жаңы категория</button>
-        <button class="btn-logout" @click="logout">Чыгуу</button>
+        <button class="btn-primary" @click="startCreate">+ Новая категория</button>
+        <button class="btn-logout" @click="logout">Выйти</button>
       </div>
     </header>
 
@@ -120,26 +120,26 @@ onMounted(loadCategories)
 
     <!-- Форма -->
     <div v-if="showForm" class="form-card">
-      <h2>{{ editingId ? 'Түзөтүү' : 'Жаңы категория' }}</h2>
+      <h2>{{ editingId ? 'Редактирование' : 'Новая категория' }}</h2>
       <div class="form-grid">
         <div class="form-group">
-          <label>Аты *</label>
-          <input v-model="form.name" placeholder="Категория аты" />
+          <label>Название *</label>
+          <input v-model="form.name" placeholder="Название категории" />
         </div>
         <div class="form-group">
           <label>Иконка</label>
           <select v-model="form.icon">
-            <option value="">Тандоо...</option>
+            <option value="">Выберите...</option>
             <option v-for="ic in icons" :key="ic.value" :value="ic.value">{{ ic.label }}</option>
           </select>
         </div>
         <div class="form-group full-width">
-          <label>Түшүндүрмө</label>
-          <textarea v-model="form.description" rows="2" placeholder="Категория жөнүндө..." />
+          <label>Описание</label>
+          <textarea v-model="form.description" rows="2" placeholder="О категории..." />
         </div>
       </div>
       <div class="form-actions">
-        <button class="btn-primary" @click="saveCategory">Сактоо</button>
+        <button class="btn-primary" @click="saveCategory">Сохранить</button>
         <button class="btn-secondary" @click="cancelForm">Отмена</button>
       </div>
     </div>
@@ -164,7 +164,7 @@ onMounted(loadCategories)
       </div>
     </div>
 
-    <p v-else class="empty">Категориялар жок</p>
+    <p v-else class="empty">Категории не найдены</p>
   </div>
 </template>
 

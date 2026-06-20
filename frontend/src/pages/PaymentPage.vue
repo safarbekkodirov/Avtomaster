@@ -16,7 +16,8 @@ const status    = route.query.status as string | undefined  // success | cancel
 // Страница используется и для инициализации, и для возврата с Stripe
 onMounted(async () => {
     if (status === 'success') {
-        // Stripe вернул пользователя — опрашиваем статус бронирования
+        // Stripe вернул пользователя — подтверждаем оплату на сервере
+        await paymentStore.complete(bookingId)
         await bookingStore.fetchOne(bookingId)
         return
     }
@@ -52,6 +53,10 @@ function retry(): void {
         <!-- Успешная оплата -->
         <div v-else-if="status === 'success'" class="payment-page__success">
             <h1>Оплата прошла успешно</h1>
+            <p v-if="paymentStore.current">
+                Статус оплаты: <strong>{{ paymentStore.current.status }}</strong>
+                | Сумма: <strong>{{ Number(paymentStore.current.amount).toLocaleString('ru-RU') }} {{ paymentStore.current.currency }}</strong>
+            </p>
             <p>Бронирование подтверждено. Мастер свяжется с вами для уточнения деталей.</p>
             <RouterLink :to="{ name: 'dashboard' }">Перейти в личный кабинет</RouterLink>
         </div>

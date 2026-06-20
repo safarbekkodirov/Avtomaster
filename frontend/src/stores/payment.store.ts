@@ -30,5 +30,20 @@ export const usePaymentStore = defineStore('payment', () => {
         }
     }
 
-    return { current, loading, error, initiate }
+    async function complete(bookingId: number): Promise<Payment | null> {
+        loading.value = true
+        error.value   = null
+        try {
+            const result  = await paymentsApi.complete(bookingId)
+            current.value = result.data
+            return result.data
+        } catch (e) {
+            error.value = e instanceof Error ? e.message : 'Ошибка подтверждения оплаты'
+            return null
+        } finally {
+            loading.value = false
+        }
+    }
+
+    return { current, loading, error, initiate, complete }
 })
