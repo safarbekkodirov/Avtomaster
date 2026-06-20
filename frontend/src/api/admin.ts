@@ -97,9 +97,15 @@ export const adminApi = {
       .then(() => undefined)
   },
 
-  getRegions(): Promise<{ member: { id: number; name: string }[] }> {
-    return client
-      .get('/api/v1/regions', { params: { itemsPerPage: 100 } })
-      .then(r => r.data)
+  async getRegions(): Promise<{ member: { id: number; name: string }[] }> {
+    const all: { id: number; name: string }[] = []
+    let page = 1
+    while (true) {
+      const r = await client.get('/api/v1/regions', { params: { page, itemsPerPage: 100 } })
+      all.push(...(r.data.member || []))
+      if (!r.data.view?.next) break
+      page++
+    }
+    return { member: all }
   },
 }

@@ -28,16 +28,28 @@ export const mastersApi = {
       .then(r => r.data)
   },
 
-  getCategories(): Promise<{ member: ServiceCategory[] }> {
-    return client
-      .get<{ member: ServiceCategory[] }>('/api/v1/service_categories', { params: { itemsPerPage: 100 } })
-      .then(r => r.data)
+  async getCategories(): Promise<{ member: ServiceCategory[] }> {
+    const all: ServiceCategory[] = []
+    let page = 1
+    while (true) {
+      const r = await client.get<{ member: ServiceCategory[]; view?: any }>('/api/v1/service_categories', { params: { page, itemsPerPage: 100 } })
+      all.push(...(r.data.member || []))
+      if (!r.data.view?.next) break
+      page++
+    }
+    return { member: all }
   },
 
-  getRegions(): Promise<{ member: Region[] }> {
-    return client
-      .get<{ member: Region[] }>('/api/v1/regions', { params: { itemsPerPage: 100 } })
-      .then(r => r.data)
+  async getRegions(): Promise<{ member: Region[] }> {
+    const all: Region[] = []
+    let page = 1
+    while (true) {
+      const r = await client.get<{ member: Region[]; view?: any }>('/api/v1/regions', { params: { page, itemsPerPage: 100 } })
+      all.push(...(r.data.member || []))
+      if (!r.data.view?.next) break
+      page++
+    }
+    return { member: all }
   },
 
   create(payload: CreateMasterPayload): Promise<Master> {
