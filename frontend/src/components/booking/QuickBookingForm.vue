@@ -138,6 +138,11 @@ async function submit() {
         {{ submitting ? 'Отправка...' : 'Записаться' }}
       </button>
 
+      <!-- Ссылка на вход -->
+      <div class="quick-form__login-link">
+        <RouterLink to="/login">Уже есть аккаунт? Войти</RouterLink>
+      </div>
+
       <p class="quick-form__hint">
         Нажимая "Записаться", вы соглашаетесь с условиями сервиса
       </p>
@@ -233,6 +238,15 @@ textarea:focus {
   box-shadow: 0 8px 24px rgba(230,57,70,0.3);
 }
 .quick-form__submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.quick-form__login-link {
+  text-align: center; margin: 1rem 0 0;
+}
+.quick-form__login-link a {
+  color: rgba(255,255,255,0.4); font-size: 0.85rem; text-decoration: none;
+  transition: color 0.2s;
+}
+.quick-form__login-link a:hover { color: rgba(255,255,255,0.7); }
 
 .quick-form__hint {
   text-align: center; margin: 0.75rem 0 0;

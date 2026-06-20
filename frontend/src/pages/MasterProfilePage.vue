@@ -141,12 +141,7 @@ onMounted(async () => {
           <span class="content-card__icon">📅</span>
           <h2 class="content-card__title">Записаться</h2>
         </div>
-        <template v-if="auth.isAuth">
-          <BookingForm :master="master" />
-        </template>
-        <template v-else>
-          <QuickBookingForm :master="master" />
-        </template>
+        <QuickBookingForm :master="master" />
       </section>
 
       <!-- Reviews -->
