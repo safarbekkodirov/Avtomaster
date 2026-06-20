@@ -224,49 +224,80 @@ onMounted(() => {
     <!-- Users tab -->
     <template v-if="!loading && activeTab === 'users'">
       <div v-if="!users.length" class="empty">Пользователей нет</div>
-      <div v-else class="table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Email</th>
-              <th>Имя</th>
-              <th>Фамилия</th>
-              <th>Роль</th>
-              <th>Дата регистрации</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="u in users" :key="u.id">
-              <td>{{ u.id }}</td>
-              <td>{{ u.email }}</td>
-              <td>{{ u.firstName || '—' }}</td>
-              <td>{{ u.lastName || '—' }}</td>
-              <td>
-                <span
-                  v-for="role in u.roles"
-                  :key="role"
-                  class="role-badge"
-                  :class="{
-                    'role-badge--admin':  role === 'ROLE_ADMIN',
-                    'role-badge--master': role === 'ROLE_MASTER',
-                    'role-badge--user':   role === 'ROLE_USER',
-                  }"
-                >
-                  {{ roleLabels[role] || role }}
-                </span>
-              </td>
-              <td>{{ u.createdAt ? formatDate(u.createdAt) : '—' }}</td>
-              <td>
-                <button class="btn-icon btn-icon--danger" @click="deleteUser(u.id)" title="Удалить">
-                  Удалить
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <template v-else>
+        <!-- Desktop table -->
+        <div class="table-wrapper desktop-only">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Имя</th>
+                <th>Фамилия</th>
+                <th>Роль</th>
+                <th>Дата регистрации</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="u in users" :key="u.id">
+                <td>{{ u.id }}</td>
+                <td>{{ u.email }}</td>
+                <td>{{ u.firstName || '—' }}</td>
+                <td>{{ u.lastName || '—' }}</td>
+                <td>
+                  <span
+                    v-for="role in u.roles"
+                    :key="role"
+                    class="role-badge"
+                    :class="{
+                      'role-badge--admin':  role === 'ROLE_ADMIN',
+                      'role-badge--master': role === 'ROLE_MASTER',
+                      'role-badge--user':   role === 'ROLE_USER',
+                    }"
+                  >
+                    {{ roleLabels[role] || role }}
+                  </span>
+                </td>
+                <td>{{ u.createdAt ? formatDate(u.createdAt) : '—' }}</td>
+                <td>
+                  <button class="btn-icon btn-icon--danger" @click="deleteUser(u.id)">
+                    Удалить
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Mobile cards -->
+        <div class="mobile-cards mobile-only">
+          <div v-for="u in users" :key="u.id" class="mobile-card">
+            <div class="mobile-card__header">
+              <div class="mobile-card__avatar">{{ (u.firstName?.[0] || u.email[0]).toUpperCase() }}</div>
+              <div class="mobile-card__info">
+                <h3>{{ u.firstName || '' }} {{ u.lastName || '' }}</h3>
+                <p>{{ u.email }}</p>
+              </div>
+              <button class="btn-icon btn-icon--danger" @click="deleteUser(u.id)">Удалить</button>
+            </div>
+            <div class="mobile-card__meta">
+              <span
+                v-for="role in u.roles"
+                :key="role"
+                class="role-badge"
+                :class="{
+                  'role-badge--admin':  role === 'ROLE_ADMIN',
+                  'role-badge--master': role === 'ROLE_MASTER',
+                  'role-badge--user':   role === 'ROLE_USER',
+                }"
+              >
+                {{ roleLabels[role] || role }}
+              </span>
+              <span v-if="u.createdAt" class="mobile-card__date">{{ formatDate(u.createdAt) }}</span>
+            </div>
+          </div>
+        </div>
+      </template>
     </template>
 
     <!-- Masters tab -->
@@ -326,93 +357,95 @@ onMounted(() => {
       </div>
 
       <div v-if="!masters.length" class="empty">Мастеров нет</div>
-      <div v-else class="table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Имя</th>
-              <th>Фамилия</th>
-              <th>Телефон</th>
-              <th>Регион</th>
-              <th>Адрес</th>
-              <th>Рейтинг</th>
-              <th>Отзывы</th>
-              <th>Услуги</th>
-              <th>Верифицирован</th>
-              <th>Дата</th>
-              <th></th>
-            </tr>
-          </thead>
-          <template v-for="m in masters" :key="m.id">
-            <tr
-              class="master-row"
-              :class="{ 'master-row--expanded': expandedMasterId === m.id }"
-              @click="toggleMaster(m.id)"
-            >
-              <td>{{ m.id }}</td>
-              <td>{{ m.firstName }}</td>
-              <td>{{ m.lastName }}</td>
-              <td>{{ m.phone || '—' }}</td>
-              <td>{{ m.regionName }}</td>
-              <td>{{ m.address || '—' }}</td>
-              <td>
-                <span class="rating">★ {{ Number(m.rating).toFixed(1) }}</span>
-              </td>
-              <td>{{ m.reviewsCount }}</td>
-              <td>
-                <span class="services-count" v-if="m.services?.length">
-                  {{ m.services.length }} шт.
-                </span>
-                <span v-else class="no-services">нет</span>
-              </td>
-              <td>
-                <span v-if="m.isVerified" class="verified">Да</span>
-                <span v-else class="not-verified">Нет</span>
-              </td>
-              <td>{{ m.createdAt ? formatDate(m.createdAt) : '—' }}</td>
-              <td>
-                <div class="row-actions">
-                  <button class="btn-icon" @click.stop="startEdit(m)" title="Редактировать">
-                    Редактировать
-                  </button>
-                  <button
-                    class="btn-icon btn-icon--danger"
-                    @click.stop="deleteMaster(m.id)"
-                    title="Удалить"
-                  >
-                    Удалить
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr v-if="expandedMasterId === m.id" class="master-detail">
-              <td colspan="12">
-                <div class="master-detail__content">
-                  <div class="detail-section" v-if="m.bio">
-                    <h4>О себе</h4>
-                    <p>{{ m.bio }}</p>
+      <template v-else>
+        <!-- Desktop table -->
+        <div class="table-wrapper desktop-only">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Фамилия</th>
+                <th>Телефон</th>
+                <th>Регион</th>
+                <th>Рейтинг</th>
+                <th>Услуги</th>
+                <th>Дата</th>
+                <th></th>
+              </tr>
+            </thead>
+            <template v-for="m in masters" :key="m.id">
+              <tr
+                class="master-row"
+                :class="{ 'master-row--expanded': expandedMasterId === m.id }"
+                @click="toggleMaster(m.id)"
+              >
+                <td>{{ m.id }}</td>
+                <td>{{ m.firstName }}</td>
+                <td>{{ m.lastName }}</td>
+                <td>{{ m.phone || '—' }}</td>
+                <td>{{ m.regionName }}</td>
+                <td><span class="rating">★ {{ Number(m.rating).toFixed(1) }}</span></td>
+                <td>{{ m.services?.length || 0 }} шт.</td>
+                <td>{{ m.createdAt ? formatDate(m.createdAt) : '—' }}</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="btn-icon" @click.stop="startEdit(m)">Ред.</button>
+                    <button class="btn-icon btn-icon--danger" @click.stop="deleteMaster(m.id)">Удалить</button>
                   </div>
-                  <div class="detail-section" v-if="m.services?.length">
-                    <h4>Услуги ({{ m.services.length }})</h4>
-                    <div class="services-grid">
-                      <div v-for="s in m.services" :key="s.id" class="service-chip">
-                        <span class="service-chip__name">{{ s.name }}</span>
-                        <span class="service-chip__price">{{ Number(s.price).toLocaleString('ru-RU') }} ₽</span>
-                        <span class="service-chip__duration">{{ s.durationMinutes }} мин</span>
-                        <span v-if="s.categoryName" class="service-chip__cat">{{ s.categoryName }}</span>
+                </td>
+              </tr>
+              <tr v-if="expandedMasterId === m.id" class="master-detail">
+                <td colspan="9">
+                  <div class="master-detail__content">
+                    <div class="detail-section" v-if="m.bio">
+                      <h4>О себе</h4>
+                      <p>{{ m.bio }}</p>
+                    </div>
+                    <div class="detail-section" v-if="m.services?.length">
+                      <h4>Услуги ({{ m.services.length }})</h4>
+                      <div class="services-grid">
+                        <div v-for="s in m.services" :key="s.id" class="service-chip">
+                          <span class="service-chip__name">{{ s.name }}</span>
+                          <span class="service-chip__price">{{ Number(s.price).toLocaleString('ru-RU') }} ₽</span>
+                          <span class="service-chip__duration">{{ s.durationMinutes }} мин</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <div class="detail-section" v-else>
-                    <p class="no-data">Услуг пока нет</p>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </template>
-        </table>
-      </div>
+                </td>
+              </tr>
+            </template>
+          </table>
+        </div>
+        <!-- Mobile cards -->
+        <div class="mobile-cards mobile-only">
+          <div v-for="m in masters" :key="m.id" class="mobile-card mobile-card--master">
+            <div class="mobile-card__header">
+              <div class="mobile-card__avatar mobile-card__avatar--master">
+                {{ m.firstName[0] }}{{ m.lastName[0] }}
+              </div>
+              <div class="mobile-card__info">
+                <h3>{{ m.firstName }} {{ m.lastName }}</h3>
+                <p>📍 {{ m.regionName }}{{ m.address ? ', ' + m.address : '' }}</p>
+              </div>
+              <div class="mobile-card__rating">
+                <span class="rating">★ {{ Number(m.rating).toFixed(1) }}</span>
+                <span class="rating-count">({{ m.reviewsCount }})</span>
+              </div>
+            </div>
+            <div class="mobile-card__meta">
+              <span v-if="m.phone" class="mobile-card__phone">📞 {{ m.phone }}</span>
+              <span v-if="m.services?.length" class="mobile-card__services">{{ m.services.length }} услуг</span>
+              <span class="mobile-card__date">{{ m.createdAt ? formatDate(m.createdAt) : '—' }}</span>
+            </div>
+            <div class="mobile-card__actions">
+              <button class="btn-icon" @click="startEdit(m)">Редактировать</button>
+              <button class="btn-icon btn-icon--danger" @click="deleteMaster(m.id)">Удалить</button>
+            </div>
+          </div>
+        </div>
+      </template>
     </template>
   </div>
 </template>
@@ -797,5 +830,129 @@ onMounted(() => {
 .row-actions {
   display: flex;
   gap: 0.25rem;
+}
+
+/* ─── Mobile Cards ─── */
+.mobile-cards {
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mobile-card {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.mobile-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.mobile-card__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1a1a2e, #e63946);
+  color: white;
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mobile-card__avatar--master {
+  background: linear-gradient(135deg, #e63946, #ff6b6b);
+}
+
+.mobile-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mobile-card__info h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-card__info p {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  color: #888;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-card__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.mobile-card__phone {
+  font-size: 0.8rem;
+  color: #555;
+}
+
+.mobile-card__services {
+  font-size: 0.8rem;
+  color: #666;
+  padding: 2px 8px;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.mobile-card__date {
+  font-size: 0.75rem;
+  color: #999;
+  margin-left: auto;
+}
+
+.mobile-card__actions {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.mobile-card__rating {
+  text-align: right;
+}
+
+/* ─── Visibility ─── */
+.desktop-only { display: block; }
+.mobile-only { display: none !important; }
+
+@media (max-width: 768px) {
+  .admin-page { padding: 1rem; }
+  .page-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+  .page-header__left { flex-direction: column; gap: 0.5rem; }
+  .page-header__right { width: 100%; justify-content: space-between; }
+  .page-header__left h1 { font-size: 1.4rem; }
+  .tabs { gap: 0; }
+  .tab { padding: 10px 16px; font-size: 0.85rem; }
+  .desktop-only { display: none !important; }
+  .mobile-only { display: flex !important; }
+  .tab-actions { justify-content: stretch; }
+  .tab-actions .btn-primary { width: 100%; text-align: center; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-card { padding: 1.25rem; }
+  .form-actions { flex-direction: column; }
+  .form-actions .btn-primary,
+  .form-actions .btn-secondary { width: 100%; text-align: center; }
 }
 </style>
