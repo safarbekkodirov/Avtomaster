@@ -736,21 +736,60 @@ onMounted(loadData)
 
 /* ─── Responsive ─── */
 @media (max-width: 768px) {
-  .hero__title { font-size: 2.5rem; }
+  .hero__title { font-size: 2.2rem; letter-spacing: -1px; }
+  .hero__subtitle { font-size: 1rem; }
   .hero__search { flex-direction: column; gap: 8px; padding: 8px; }
   .hero__search-icon { display: none; }
-  .hero__search-btn { width: 100%; text-align: center; }
-  .hero__stats { gap: 1rem; }
-  .hero__stat-num { font-size: 1.3rem; }
+  .hero__search-btn { width: 100%; text-align: center; padding: 16px; }
+  .hero__tags { gap: 6px; }
+  .hero__tag { padding: 6px 12px; font-size: 0.8rem; }
+  .hero__stats { gap: 0.75rem; flex-wrap: wrap; }
+  .hero__stat-num { font-size: 1.2rem; }
+  .hero__stat-label { font-size: 0.7rem; }
   .hero__stat-divider { display: none; }
   .hero__scroll { display: none; }
-  .section { padding: 4rem 0; }
-  .section__title { font-size: 1.6rem; }
-  .masters-grid { grid-template-columns: 1fr; }
-  .categories { grid-template-columns: 1fr 1fr; }
-  .steps { flex-direction: column; }
-  .step__connector { width: 2px; height: 30px; margin: 0; }
-  .cta__title { font-size: 1.8rem; }
+  .hero__content { padding: 1rem; }
+  .hero__badge { margin-bottom: 1.5rem; }
+
+  .section { padding: 3rem 0; }
+  .section__title { font-size: 1.5rem; }
+  .section__header { flex-direction: column; align-items: flex-start; }
+
+  .categories { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .category-card { padding: 1rem 0.75rem; }
+  .category-card__emoji { font-size: 1.5rem; }
+  .category-card__name { font-size: 0.85rem; }
+  .category-card__arrow { display: none; }
+
+  .masters-grid { grid-template-columns: 1fr; gap: 1rem; }
+  .master-card { padding: 1.25rem; }
+  .master-card__avatar { width: 44px; height: 44px; font-size: 0.9rem; }
+  .master-card__name { font-size: 1rem; }
+
+  .features { grid-template-columns: 1fr; gap: 1rem; }
+  .feature { padding: 1.5rem; }
+
+  .steps { flex-direction: column; gap: 0; }
+  .step { min-width: auto; padding: 1.5rem 1rem; }
+  .step__connector { width: 2px; height: 24px; margin: 0; }
+  .step__num { width: 48px; height: 48px; font-size: 1rem; }
+
+  .cta { padding: 3rem 0; }
+  .cta__title { font-size: 1.6rem; }
+  .cta__desc { font-size: 0.95rem; }
+  .cta__buttons { flex-direction: column; align-items: center; }
+  .cta__btn { width: 100%; max-width: 280px; }
+
+  .footer { padding: 1.5rem 0; }
   .footer__inner { flex-direction: column; text-align: center; }
+}
+
+@media (max-width: 480px) {
+  .hero__title { font-size: 1.8rem; }
+  .hero__subtitle { font-size: 0.9rem; }
+  .hero__stats { gap: 0.5rem; }
+  .hero__stat-num { font-size: 1.1rem; }
+  .categories { grid-template-columns: 1fr; }
+  .section { padding: 2.5rem 0; }
 }
 </style>
