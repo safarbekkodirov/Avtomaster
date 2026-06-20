@@ -53,6 +53,12 @@ security:
             methods:
                 - post
 
+        quick_booking:
+            pattern: ^/api/v1/bookings/quick$
+            security: false
+            methods:
+                - post
+
         doc:
             pattern: ^/api/v1/?$
             security: false
@@ -112,6 +118,7 @@ security:
         - { path: ^/api/v1/users/auth/?$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/users/auth/refreshToken, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/users/is_unique_email, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v1/bookings/quick, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [post] }
         - { path: ^/api/v1/masters/search, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/masters/\d+$, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [get] }
         - { path: ^/api/v1/master_services, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [get] }

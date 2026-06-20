@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.store'
 import { mastersApi } from '@/api/masters'
 import BookingForm from '@/components/booking/BookingForm.vue'
+import QuickBookingForm from '@/components/booking/QuickBookingForm.vue'
 import ReviewList from '@/components/review/ReviewList.vue'
 import MapDisplay from '@/components/common/MapDisplay.vue'
 import type { Master } from '@/types/master.types'
@@ -144,17 +145,7 @@ onMounted(async () => {
           <BookingForm :master="master" />
         </template>
         <template v-else>
-          <div class="auth-prompt">
-            <p>Чтобы записаться к мастеру, войдите или зарегистрируйтесь</p>
-            <div class="auth-prompt__buttons">
-              <button class="auth-btn auth-btn--primary" @click="router.push({ name: 'login' })">
-                Войти
-              </button>
-              <button class="auth-btn auth-btn--outline" @click="router.push({ name: 'register' })">
-                Зарегистрироваться
-              </button>
-            </div>
-          </div>
+          <QuickBookingForm :master="master" />
         </template>
       </section>
 

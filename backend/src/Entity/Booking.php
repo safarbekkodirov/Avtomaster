@@ -312,4 +312,14 @@ class Booking implements
     {
         return $this->client?->getLastName() ?? '';
     }
+
+    #[Groups(['booking:read', 'booking:list'])]
+    public function getClientPhone(): string
+    {
+        $notes = $this->notes ?? '';
+        if (str_contains($notes, ' | ')) {
+            return explode(' | ', $notes)[0];
+        }
+        return '';
+    }
 }
